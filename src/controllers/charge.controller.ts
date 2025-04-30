@@ -1,17 +1,19 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import { Charge } from '../types/charge.types';
 import { addCharge } from '../storage/charge.store';
 
-export const postCharge = (req: Request, res: Response) => {
+export const postCharge: RequestHandler = (req, res) => {
   const charge: Charge = req.body;
   if (!charge.chargeId || !charge.partnerId || !charge.amount) {
-    return res.status(400).json({ error: 'Invalid charge data' });
+    res.status(400).json({ error: 'Invalid charge data' });
+    return;
   }
 
   const success = addCharge(charge);
   if (!success) {
-    return res.status(409).json({ error: 'Duplicate chargeId' });
+    res.status(409).json({ error: 'Duplicate chargeId' });
+    return;
   }
 
-  return res.status(201).json({ message: 'Charge added' });
+  res.status(201).json({ message: 'Charge added' });
 };
